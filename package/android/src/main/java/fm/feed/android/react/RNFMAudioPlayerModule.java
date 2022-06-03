@@ -208,13 +208,6 @@ public class RNFMAudioPlayerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void canLike(Promise promise) {
-
-    int myInt = mFeedAudioPlayer.canLike() ? 1 : 0;
-    promise.resolve(myInt);
-  }
-
-  @ReactMethod
   public void canSkip(Promise promise) {
     int myInt = mFeedAudioPlayer.canSkip() ? 1 : 0;
     promise.resolve(myInt);
@@ -311,6 +304,9 @@ public class RNFMAudioPlayerModule extends ReactContextBaseJavaModule
 
   @Override
   public void onPlayStarted(Play play) {
+    if (play == null) {
+      return;
+    }
 
     String str = toJson(play.getAudioFile().getMetadata());
 

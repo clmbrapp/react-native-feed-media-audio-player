@@ -24,6 +24,10 @@ android {
     lintOptions {
         abortOnError false
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
 
 }
@@ -35,7 +39,7 @@ repositories {
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
-    implementation 'fm.feed.android:player-sdk-exo2141:6.2.3'
+    implementation 'fm.feed.android:player-sdk-exo2118:6.2.0'
     implementation 'com.google.code.gson:gson:2.9.0'
 }
   
