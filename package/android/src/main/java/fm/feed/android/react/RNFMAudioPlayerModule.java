@@ -205,33 +205,41 @@ public class RNFMAudioPlayerModule extends ReactContextBaseJavaModule
     });
   }
 
+
   @ReactMethod
-  public void setActiveStation(Integer station) {
-
-    // Log.i(TAG, "Station id ="+station.toString());
+  public void setActiveStation(Integer stationId) {
     boolean flag = false;
+
     for (Station st : mFeedAudioPlayer.getStationList()) {
-
-      if (st.getId().toString().equals(station.toString())) {
-        UiThreadUtil.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            mFeedAudioPlayer.setActiveStation(st, false);
-            mFeedAudioPlayer.prepareToPlay(st, () -> {
-              WritableMap params = Arguments.createMap();
-              sendEvent(reactContext, "musicQueued", params);
-            });
-          }
-        });
-
+      if (st.getId().toString().equals(stationId.toString())) {
+        final Station station = st; // Declare a final copy of station
+        setActiveStationAndPrepareToPlay(station);
         flag = true;
         break;
       }
     }
+
     if (!flag) {
-      Log.e(TAG, "Cannot set active station to " + station + " because no station found with that id");
+      Log.e(TAG, "Cannot set active station to " + stationId + " because no station found with that id");
     }
   }
+
+  private void setActiveStationAndPrepareToPlay(final Station station) { // Declare station as final here
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        mFeedAudioPlayer.setActiveStation(station, false);
+        prepareToPlayAndSendEvent();
+      }
+    });
+  }
+
+  private void prepareToPlayAndSendEvent() {
+    WritableMap params = Arguments.createMap();
+    sendEvent(reactContext, "musicQueued", params);
+  }
+
+
 
   @ReactMethod
   public void skip() {
@@ -273,24 +281,27 @@ public class RNFMAudioPlayerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void maxSeekableLengthInSeconds(Promise promise) {
+  public void maxSeekableLengthInSeconds(final Promise reactPromise) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        final Promise promise = reactPromise; // Declare a final copy of promise
         promise.resolve(mFeedAudioPlayer.maxSeekableLengthInSeconds());
       }
     });
   }
 
   @ReactMethod
-  public void seekCurrentStationBy(float seconds) {
+  public void seekCurrentStationBy(final float seconds) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-         mFeedAudioPlayer.seekCurrentStationBy(seconds);
+        final float seekSeconds = seconds; // Declare a final copy of seconds
+        mFeedAudioPlayer.seekCurrentStationBy(seekSeconds);
       }
     });
   }
+
 
   @Override
   public Map<String, Object> getConstants() {
